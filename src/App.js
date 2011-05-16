@@ -53,7 +53,7 @@ prdc.App = Ext.extend(Ext.TabPanel, {
                 };
                 
                 Ext.Ajax.defaultHeaders = {
-                 'Accept': 'application/json'
+                 'Accept':'application/json'
                 };
 
                 Ext.util.JSONP.request({
