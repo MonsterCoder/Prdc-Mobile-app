@@ -52,12 +52,13 @@ prdc.App = Ext.extend(Ext.TabPanel, {
                     description: "A session used to demostrate the scencha framework"
                 };
                 
+                Ext.Ajax.defaultHeaders = {
+                 'Accept': 'application/json'
+                };
+
                 Ext.util.JSONP.request({
-                    url: 'http://prairiedevcon.com/Sessions.json',
+                    url: 'http://prairiedevcon.com/Sessions',
                     callbackKey: 'callback',
-                    params: {
-                        
-                    },
                     callback: function(data){
                         var rlt = data.results;
                         alert(rlt);
