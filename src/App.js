@@ -1,7 +1,12 @@
 prdc.App = Ext.extend(Ext.TabPanel, {
-    
+    tabBar: {
+                dock: 'bottom',
+                layout: {
+                    pack: 'center'
+                }
+            },
     fullscreen: true,
-
+	ui: 'light',
     cardSwitchAnimation: false,
 
 	initComponent: function() {
@@ -11,63 +16,108 @@ prdc.App = Ext.extend(Ext.TabPanel, {
                
                 title: 'Sessions',
                 scroll: 'vertical',
+                iconCls: 'time',
                 tpl: [
                 '<tpl for=".">',
                     '<div class="session">',
                         '<div class="session-title">',
-                            '<h2>{title}</h2>',
+                            '<h2>{Title}</h2>',
                         '</div>',
-                        '<p class="session_description">{description}</p>',
+                        '<p class="session_description">{Abstract}</p>',
                     '</div>',
                 '</tpl>'
                 ]
             });
             
             speakers = new Ext.Component({
-                title: 'Speakers'
+                title: 'Speakers',   
+                scroll: 'vertical',
+                iconCls: 'user',
+                tpl: [
+                '<tpl for=".">',
+                    '<div class="speaker">',
+                        '<div class="speaker-name">',
+                            '<h2>{FirstName} {LastName}</h2>',
+                        '</div>',
+                        '<p class="speaker_bio">{Bio}</p>',
+                    '</div>',
+                '</tpl>'
+                ]
             });
             
             tweets = new Ext.Component({
-                title: 'Tweets'
+                title: 'Tweets',
+                 iconCls: 'team'
             });
             
             locations = new Ext.Component({
+            	iconCls: 'locate',
                 title: 'Location'
             });
             
             about = new Ext.Component({
+                iconCls: 'info',
                 title: 'About'
             });
             
-            this.items = [sessions, speakers, tweets, locations, about];
-            
-            refresh = function() {
-                var session1 = {
-                    title: "Dummy session 1",
-                    description: "A session used to demostrate the scencha framework"
-                };
-                
-                var session2 = {
-                    title: "Dummy session 1",
-                    description: "A session used to demostrate the scencha framework"
-                };
-                
-                Ext.Ajax.defaultHeaders = {
-                 'Accept':'application/json'
-                };
-
-                Ext.util.JSONP.request({
-                    url: 'http://prairiedevcon.com/Sessions',
-                    callbackKey: 'callback',
-                    callback: function(data){
-                        var rlt = data.results;
-                        alert(rlt);
-                      sessions.update(rlt);  
-                    }
-                });               
-        };
+            if (navigator.onLine) {
+	            this.items = [sessions, speakers, tweets, locations, about];
+	            
+	            refresh = function() {
+	                Ext.Ajax.defaultHeaders = {'Accept': 'application/json' } ; 
+	                function makeAjaxRequest() {            
+	                  Ext.Ajax.request({
+	                    url: 'http://prairiedevcon.com/Sessions',
+	                    method: "GET",
+	                    params: {},
+	                    success: function(res, request) {                
+	                               if (res) {
+	                                        
+	                                        result = Ext.util.JSON.decode(res.responseText);   
+	                                        sessions.update(result);             
+	                                    }
+	                                    else {
+	                                        alert('There was an error retrieving the data.');
+	                                    }
+	                                },
+	                   failure: function(res, request){
+	                                 alert('Failed: ', res);
+	                                }
+	                            });
+	                        }
+	                        
+	                makeAjaxRequest();
+	                
+	               function makeSpeakersRequest() {            
+	                  Ext.Ajax.request({
+	                    url: 'http://prairiedevcon.com/Speakers',
+	                    method: "GET",
+	                    params: {},
+	                    success: function(res, request) {                
+	                               if (res) {
+	                                        
+	                                        result = Ext.util.JSON.decode(res.responseText);   
+	                                        speakers.update(result);             
+	                                    }
+	                                    else {
+	                                        alert('There was an error retrieving the data.');
+	                                    }
+	                                },
+	                   failure: function(res, request){
+	                                 alert('Failed: ', res);
+	                                }
+	                            });
+	                        }
+	           	makeSpeakersRequest();
+	            }
         
-        refresh();    
+        		refresh();    
+        } else {
+            this.on('render', function(){
+                this.el.mask('No internet connection.');
+            }, this);
+        }
+        
 	   	prdc.cfg = {};
 		prdc.cfg.shortUrl = this.shortUrl;
 		prdc.cfg.title = this.title;
@@ -77,3 +127,4 @@ prdc.App = Ext.extend(Ext.TabPanel, {
     
 
 });
+
