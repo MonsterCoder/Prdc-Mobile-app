@@ -65,16 +65,17 @@ prdc.App = Ext.extend(Ext.TabPanel, {
 	            
 	            refresh = function() {
 	                Ext.Ajax.defaultHeaders = {'Accept': 'application/json' } ; 
-	                function makeAjaxRequest() {            
+	                
+	                 function makerequest(link, target) {            
 	                  Ext.Ajax.request({
-	                    url: 'http://prairiedevcon.com/Sessions',
+	                    url: link,
 	                    method: "GET",
 	                    params: {},
 	                    success: function(res, request) {                
 	                               if (res) {
 	                                        
 	                                        result = Ext.util.JSON.decode(res.responseText);   
-	                                        sessions.update(result);             
+	                                        target.update(result);             
 	                                    }
 	                                    else {
 	                                        alert('There was an error retrieving the data.');
@@ -86,29 +87,8 @@ prdc.App = Ext.extend(Ext.TabPanel, {
 	                            });
 	                        }
 	                        
-	                makeAjaxRequest();
-	                
-	               function makeSpeakersRequest() {            
-	                  Ext.Ajax.request({
-	                    url: 'http://prairiedevcon.com/Speakers',
-	                    method: "GET",
-	                    params: {},
-	                    success: function(res, request) {                
-	                               if (res) {
-	                                        
-	                                        result = Ext.util.JSON.decode(res.responseText);   
-	                                        speakers.update(result);             
-	                                    }
-	                                    else {
-	                                        alert('There was an error retrieving the data.');
-	                                    }
-	                                },
-	                   failure: function(res, request){
-	                                 alert('Failed: ', res);
-	                                }
-	                            });
-	                        }
-	           	makeSpeakersRequest();
+	                makerequest('http://prairiedevcon.com/Sessions', sessions);
+	                makerequest('http://prairiedevcon.com/Speakers', speakers);
 	            }
         
         		refresh();    
